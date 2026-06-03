@@ -55,6 +55,13 @@ osThreadId_t Task2Handle;
 const osThreadAttr_t Task2_attributes = {
   .name = "Task2",
   .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for Task3 */
+osThreadId_t Task3Handle;
+const osThreadAttr_t Task3_attributes = {
+  .name = "Task3",
+  .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* USER CODE BEGIN PV */
@@ -67,6 +74,7 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 void StartTask1(void *argument);
 void StartTask2(void *argument);
+void StartTask3(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -136,6 +144,9 @@ int main(void)
 
   /* creation of Task2 */
   Task2Handle = osThreadNew(StartTask2, NULL, &Task2_attributes);
+
+  /* creation of Task3 */
+  Task3Handle = osThreadNew(StartTask3, NULL, &Task3_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -262,6 +273,12 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, EN1_Pin|EN2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
@@ -274,6 +291,20 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : EN1_Pin EN2_Pin */
+  GPIO_InitStruct.Pin = EN1_Pin|EN2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : EN3_Pin */
+  GPIO_InitStruct.Pin = EN3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(EN3_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
@@ -318,6 +349,24 @@ void StartTask2(void *argument)
     osDelay(1);
   }
   /* USER CODE END StartTask2 */
+}
+
+/* USER CODE BEGIN Header_StartTask3 */
+/**
+* @brief Function implementing the Task3 thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask3 */
+void StartTask3(void *argument)
+{
+  /* USER CODE BEGIN StartTask3 */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartTask3 */
 }
 
 /**
