@@ -328,7 +328,7 @@ void StartTask1(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	HAL_GPIO_TogglePin(PORTC, EN1_Pin);
+	HAL_GPIO_TogglePin(EN1_GPIO_Port, EN1_Pin);
 	osDelay(1000);
   }
   /* USER CODE END 5 */
@@ -347,10 +347,9 @@ void StartTask2(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	HAL_GPIO_TogglePin(PORTC, EN2_Pin);
+	HAL_GPIO_TogglePin(EN2_GPIO_Port, EN2_Pin);
 	osDelay(5000);
   }
-  /* USER CODE END StartTask2 */
 }
 
 /* USER CODE BEGIN Header_StartTask3 */
@@ -366,7 +365,7 @@ void StartTask3(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	HAL_GPIO_TogglePin(PORTC, EN2_Pin);
+	HAL_GPIO_TogglePin(EN3_GPIO_Port, EN3_Pin);
 	osDelay(2500);
   }
   /* USER CODE END StartTask3 */
