@@ -19,4 +19,4 @@ good_strimg_3 += (chr(0xd6) + chr(0x10) + chr(0x40) + chr(0x00) + chr(0x01) + ch
 ##print("\n\n\n\n\n\n")
 ##print(good_string)
 with open("attackk.txt", 'w') as file:
-    print(good_string, file = file)
+    print(good_strimg_3, file = file)
