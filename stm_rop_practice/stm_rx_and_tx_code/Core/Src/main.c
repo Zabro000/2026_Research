@@ -19,6 +19,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include <stdio.h>
+
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -32,7 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define BUFFER 12
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -79,16 +81,19 @@ void StartTask3(void *argument);
 /* USER CODE BEGIN PFP */
 char *hi = "stuff\n";
 char *hii = "dog\n";
-uint8_t DATA[12];
+uint8_t ty[] = "doggg\n";
+uint8_t DATA[12] = {'\0'};
+
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	HAL_UART_Receive_IT(&huart2, DATA, 12);
-	osDelay(10);
-	HAL_UART_Transmit(&huart2, hii, 12, 100);
-	osDelay(10);
-	HAL_UART_Transmit(&huart2, DATA, 12, 100);
+	HAL_UART_Receive_IT(&huart2, DATA, BUFFER);
 
+}
 
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+;
 }
 
 /* USER CODE END PFP */
@@ -341,11 +346,21 @@ void StartTask1(void *argument)
   /* USER CODE BEGIN 5 */
 
   /* Infinite loop */
-	HAL_UART_Receive_IT(&huart2, DATA, 12);
 
   for(;;)
   {
-	  HAL_UART_Receive_IT(&huart2, DATA, 12);
+	  HAL_UART_Receive_IT(&huart2, DATA, BUFFER);
+
+	  if(DATA[0] != '\0')
+	  {
+		  HAL_UART_Transmit(&huart2, ty, sizeof(ty), 100);
+		  osDelay(100);
+		  DATA[12] = '\0';
+		  HAL_UART_Transmit_IT(&huart2, DATA, BUFFER);
+		  DATA[0] = '\0';
+	  }
+
+	  osDelay(1);
 
   }
   /* USER CODE END 5 */
