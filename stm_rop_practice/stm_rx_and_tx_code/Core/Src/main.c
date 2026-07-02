@@ -19,6 +19,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -43,6 +46,8 @@
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_rx;
+
+uint8_t RX_BUF[12] = {0};
 
 /* Definitions for Task1 */
 osThreadId_t Task1Handle;
@@ -327,10 +332,16 @@ static void MX_GPIO_Init(void)
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
+
   /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    HAL_UART_Transmit(&huart2, RX_BUF, 12, 100);
+    HAL_UART_Receive_DMA(&huart2, RX_BUF, 12);
+}
 
 /* USER CODE END 4 */
 
@@ -344,15 +355,13 @@ static void MX_GPIO_Init(void)
 void StartTask1(void *argument)
 {
   /* USER CODE BEGIN 5 */
-	uint8_t RX_BUF[12] = {14};
+
   /* Infinite loop */
-	HAL_UART_Receive_DMA(&huart2, RX_BUF, sizeof(RX_BUF));
+
   for(;;)
   {
+	  HAL_UART_Receive_DMA(&huart2, RX_BUF, 12);
 
-	  HAL_UART_Transmit(&huart2, RX_BUF, sizeof(RX_BUF), 1000);
-	  osDelay(500);
-	  HAL_UART_Receive_DMA(&huart2, RX_BUF, sizeof(RX_BUF));
 
   }
   /* USER CODE END 5 */
