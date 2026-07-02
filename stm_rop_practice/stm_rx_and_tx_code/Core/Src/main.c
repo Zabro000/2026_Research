@@ -19,9 +19,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -45,9 +42,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart2;
-DMA_HandleTypeDef hdma_usart2_rx;
-
-uint8_t RX_BUF[12] = {0};
 
 /* Definitions for Task1 */
 osThreadId_t Task1Handle;
@@ -77,7 +71,6 @@ const osThreadAttr_t Task3_attributes = {
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_DMA_Init(void);
 static void MX_USART2_UART_Init(void);
 void StartTask1(void *argument);
 void StartTask2(void *argument);
@@ -121,7 +114,6 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
@@ -261,22 +253,6 @@ static void MX_USART2_UART_Init(void)
 }
 
 /**
-  * Enable DMA controller clock
-  */
-static void MX_DMA_Init(void)
-{
-
-  /* DMA controller clock enable */
-  __HAL_RCC_DMA1_CLK_ENABLE();
-
-  /* DMA interrupt init */
-  /* DMA1_Stream5_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
-
-}
-
-/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -337,11 +313,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-    HAL_UART_Transmit(&huart2, RX_BUF, 12, 100);
-    HAL_UART_Receive_DMA(&huart2, RX_BUF, 12);
-}
 
 /* USER CODE END 4 */
 
@@ -357,12 +328,12 @@ void StartTask1(void *argument)
   /* USER CODE BEGIN 5 */
 
   /* Infinite loop */
+	uint8_t RX_BUF[12] = {0};
+	HAL_UART_Receive(&huart2, RX_BUF, 12, 5000);
+	HAL_UART_Transmit(&huart2, RX_BUF, 12, 100);
 
   for(;;)
   {
-	  HAL_UART_Receive_DMA(&huart2, RX_BUF, 12);
-
-
   }
   /* USER CODE END 5 */
 }
