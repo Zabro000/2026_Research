@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include <string.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -80,6 +81,7 @@ void StartTask3(void *argument);
 char *hi = "stuff\n";
 char *hii = "dog\n";
 uint8_t ty[] = "doggg\n";
+char *cmd = "send";
 
 uint8_t DATA[BUFFER] = {'\0'};
 uint16_t data_length = 0;
@@ -90,7 +92,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	data_length = Size;
 	HAL_UARTEx_ReceiveToIdle_IT(&huart2, DATA, BUFFER);
-	HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
+	//HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
@@ -346,14 +348,15 @@ static void MX_GPIO_Init(void)
 void StartTask1(void *argument)
 {
   /* USER CODE BEGIN 5 */
+	int cmd_1_token = 0;
 
   /* Infinite loop */
 
   for(;;)
   {
 	  HAL_UARTEx_ReceiveToIdle_IT(&huart2, DATA, BUFFER);
-
-
+	  osDelay(10);
+	  HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
 	  osDelay(10);
 
   }
