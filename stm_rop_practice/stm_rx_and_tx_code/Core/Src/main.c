@@ -81,10 +81,12 @@ void StartTask3(void *argument);
 char *hi = "stuff\n";
 char *hii = "dog\n";
 uint8_t ty[] = "doggg\n";
-char *cmd = "send";
+uint8_t *cmd = "send\n";
 
 uint8_t DATA[BUFFER] = {'\0'};
 uint16_t data_length = 0;
+
+uint8_t uart_int_var = 0;
 
 
 
@@ -92,7 +94,9 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	data_length = Size;
 	HAL_UARTEx_ReceiveToIdle_IT(&huart2, DATA, BUFFER);
-	//HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
+	DATA[data_length] = '\0';
+	uart_int_var = 1;
+
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
@@ -348,16 +352,21 @@ static void MX_GPIO_Init(void)
 void StartTask1(void *argument)
 {
   /* USER CODE BEGIN 5 */
-	int cmd_1_token = 0;
+	//int cmd_1_token = 0;
 
   /* Infinite loop */
 
   for(;;)
   {
 	  HAL_UARTEx_ReceiveToIdle_IT(&huart2, DATA, BUFFER);
-	  osDelay(10);
-	  HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
-	  osDelay(10);
+
+	  if((!strcmp(DATA, cmd)) && (uart_int_var == 1))
+	  {
+		  osDelay(10);
+		  HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
+	  }
+
+	  uart_int_var = 0;
 
   }
   /* USER CODE END 5 */
