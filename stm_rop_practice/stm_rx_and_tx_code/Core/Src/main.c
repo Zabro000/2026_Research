@@ -99,16 +99,11 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 
 }
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
-{
-;
-}
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void
 /* USER CODE END 0 */
 
 /**
@@ -359,7 +354,6 @@ void StartTask1(void *argument)
   for(;;)
   {
 	  HAL_UARTEx_ReceiveToIdle_IT(&huart2, DATA, BUFFER);
-
 	  if((!strcmp(DATA, cmd)) && (uart_int_var == 1))
 	  {
 		  osDelay(10);
