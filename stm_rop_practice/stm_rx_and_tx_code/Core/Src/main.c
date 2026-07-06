@@ -34,6 +34,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define BUFFER 40
+#define SAW_PTS 128
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -80,8 +81,9 @@ void StartTask3(void *argument);
 /* USER CODE BEGIN PFP */
 char *hi = "stuff\n";
 char *hii = "dog\n";
-uint8_t ty[] = "doggg\n";
 uint8_t *cmd = "send\n";
+
+uint16_t saw[SAW_PTS] = {};
 
 uint8_t DATA[BUFFER] = {'\0'};
 uint16_t data_length = 0;
