@@ -85,7 +85,7 @@ char *hi = "stuff\n";
 char *hii = "dog\n";
 uint8_t *cmd = "send\n";
 
-uint16_t saw[SAW_PTS] = {0,251,503,754,1006,1257,1509,1761,2012,
+uint32_t saw[SAW_PTS] = {0,251,503,754,1006,1257,1509,1761,2012,
 						2264,2515,2767,3018,3270,3522,3773,3773,3522,3270,3018,2767,
 						2515,2264,2012,1761,1509,1257,1006,754,503,251,0};
 
@@ -143,7 +143,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_DAC_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -315,6 +315,8 @@ static void MX_USART2_UART_Init(void)
   }
   /* USER CODE BEGIN USART2_Init 2 */
 
+
+
   /* USER CODE END USART2_Init 2 */
 
 }
@@ -398,10 +400,7 @@ void StartTask2(void *argument)
   {
     for(; lut_index < SAW_PTS; lut_index++)
     {
-    	DAC->DHR12R1 = saw[lut_index];
-    	DAC1->DHR12R1 = saw[lut_index];
-    	DAC1->DHR12R1 = saw[lut_index];
-
+    	HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 4000);
     	osDelay(50);
     }
     lut_index = 0;
