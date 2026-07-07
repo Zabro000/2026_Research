@@ -150,7 +150,6 @@ int main(void)
   MX_DAC_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, saw, SAW_PTS, DAC_ALIGN_12B_R);
   HAL_TIM_Base_Start(&htim2);
   /* USER CODE END 2 */
 
@@ -437,7 +436,7 @@ void StartTask1(void *argument)
 	//int cmd_1_token = 0;
 
   /* Infinite loop */
-
+  HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, saw, SAW_PTS, DAC_ALIGN_12B_R);
   for(;;)
   {
 	  HAL_UARTEx_ReceiveToIdle_IT(&huart2, DATA, BUFFER);
@@ -465,6 +464,7 @@ void StartTask2(void *argument)
   /* USER CODE BEGIN StartTask2 */
   /* Infinite loop */
   int lut_index = 0;
+  // Define the timer:
   for(;;)
   {
     for(; lut_index < SAW_PTS; lut_index++)
