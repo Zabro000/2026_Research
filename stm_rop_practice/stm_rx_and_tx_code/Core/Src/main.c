@@ -89,6 +89,7 @@ void StartTask3(void *argument);
 char *hi = "stuff\n";
 char *hii = "dog\n";
 uint8_t *cmd = "send\n";
+uint8_t *cmd2 = "echo\n";
 
 uint32_t saw[SAW_PTS] = {0,251,503,754,1006,1257,1509,1761,2012,
 						2264,2515,2767,3018,3270,3522,3773,3773,3522,3270,3018,2767,
@@ -150,7 +151,7 @@ int main(void)
   MX_DAC_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start(&htim2);
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -166,6 +167,8 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
+  HAL_TIM_Base_Start(&htim2);
+  HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, saw, SAW_PTS, DAC_ALIGN_12B_R);
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
@@ -436,7 +439,7 @@ void StartTask1(void *argument)
 	//int cmd_1_token = 0;
 
   /* Infinite loop */
-  HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, saw, SAW_PTS, DAC_ALIGN_12B_R);
+
   for(;;)
   {
 	  HAL_UARTEx_ReceiveToIdle_IT(&huart2, DATA, BUFFER);
@@ -445,6 +448,12 @@ void StartTask1(void *argument)
 		  osDelay(10);
 		  HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
 	  }
+	  else if((!strcmp(DATA, cmd2)) && (uart_int_var == 1))
+	  {
+		  osDelay(10);
+		  HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
+	  }
+
 
 	  uart_int_var = 0;
 
@@ -465,15 +474,9 @@ void StartTask2(void *argument)
   /* Infinite loop */
   int lut_index = 0;
   // Define the timer:
+
   for(;;)
   {
-    for(; lut_index < SAW_PTS; lut_index++)
-    {
-    	HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, saw[lut_index]);
-    	osDelay(50);
-    }
-    lut_index = 0;
-
   }
   /* USER CODE END StartTask2 */
 }
