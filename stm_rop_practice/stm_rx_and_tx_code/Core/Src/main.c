@@ -400,7 +400,7 @@ void StartTask2(void *argument)
   {
     for(; lut_index < SAW_PTS; lut_index++)
     {
-    	HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 4000);
+    	HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, saw[lut_index]);
     	osDelay(50);
     }
     lut_index = 0;
