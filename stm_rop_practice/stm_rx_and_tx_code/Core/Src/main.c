@@ -53,7 +53,7 @@ UART_HandleTypeDef huart2;
 osThreadId_t Task1Handle;
 const osThreadAttr_t Task1_attributes = {
   .name = "Task1",
-  .stack_size = 1024 * 4,
+  .stack_size = 2048 * 4,
   .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for Task2 */
@@ -69,6 +69,11 @@ const osThreadAttr_t Task3_attributes = {
   .name = "Task3",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for FreqQueue */
+osMessageQueueId_t FreqQueueHandle;
+const osMessageQueueAttr_t FreqQueue_attributes = {
+  .name = "FreqQueue"
 };
 /* USER CODE BEGIN PV */
 
@@ -170,6 +175,10 @@ int main(void)
   HAL_TIM_Base_Start(&htim2);
   HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, saw, SAW_PTS, DAC_ALIGN_12B_R);
   /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of FreqQueue */
+  FreqQueueHandle = osMessageQueueNew (10, sizeof(int), &FreqQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
