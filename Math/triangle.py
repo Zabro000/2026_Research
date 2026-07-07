@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-PTS = 128
+PTS = 32
 PI = math.pi
 
 VREF = 3.3
