@@ -8,6 +8,7 @@ VREF = 3.3
 DACRES_12B = 4096
 
 LINK = "https://deepbluembedded.com/stm32-dac-tutorial-example-hal-code-analog-signal-genreation/"
+LINK2 = "https://deepbluembedded.com/stm32-dac-sine-wave-generation-stm32-dac-dma-timer-example/"
 
 Fclk = 0
 
