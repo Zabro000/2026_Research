@@ -86,9 +86,9 @@ void StartTask2(void *argument);
 void StartTask3(void *argument);
 
 /* USER CODE BEGIN PFP */
-char *hi = "stuff\n";
-char *hii = "dog\n";
-uint8_t *cmd = "send\n";
+uint8_t *cmd_msg1 = "send a number between 1 and 10\n";
+uint8_t *cmd = "fast\n";
+uint8_t *cmd3 = "slow\n";
 uint8_t *cmd2 = "echo\n";
 
 uint32_t saw[SAW_PTS] = {0,251,503,754,1006,1257,1509,1761,2012,
@@ -439,6 +439,9 @@ void StartTask1(void *argument)
 	//int cmd_1_token = 0;
 
   /* Infinite loop */
+	uint8_t CMD[BUFFER] = {'\0'};
+	int copy_flag = 0;
+
 
   for(;;)
   {
@@ -447,11 +450,18 @@ void StartTask1(void *argument)
 	  {
 		  osDelay(10);
 		  HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
+		  copy_flag = 1;
 	  }
 	  else if((!strcmp(DATA, cmd2)) && (uart_int_var == 1))
 	  {
 		  osDelay(10);
 		  HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
+	  }
+
+	  if(copy_flag == 1)
+	  {
+		  strcpy(CMD, DATA);
+		  copy_flag = 0;
 	  }
 
 
