@@ -703,7 +703,7 @@ static void MX_DAC_Init(void)
  800070c:	f000 f910 	bl	8000930 <Error_Handler>
   }
 
-  /** DAC channel OUT2 config
+  /** DAC channel OUT1 config
   */
   sConfig.DAC_Trigger = DAC_TRIGGER_NONE;
  8000710:	2300      	movs	r3, #0
@@ -711,9 +711,9 @@ static void MX_DAC_Init(void)
   sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
  8000714:	2300      	movs	r3, #0
  8000716:	607b      	str	r3, [r7, #4]
-  if (HAL_DAC_ConfigChannel(&hdac, &sConfig, DAC_CHANNEL_2) != HAL_OK)
+  if (HAL_DAC_ConfigChannel(&hdac, &sConfig, DAC_CHANNEL_1) != HAL_OK)
  8000718:	463b      	mov	r3, r7
- 800071a:	2210      	movs	r2, #16
+ 800071a:	2200      	movs	r2, #0
  800071c:	4619      	mov	r1, r3
  800071e:	4806      	ldr	r0, [pc, #24]	@ (8000738 <MX_DAC_Init+0x4c>)
  8000720:	f000 fc6c 	bl	8000ffc <HAL_DAC_ConfigChannel>
@@ -1228,10 +1228,10 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
  80009ea:	60fb      	str	r3, [r7, #12]
  80009ec:	68fb      	ldr	r3, [r7, #12]
     /**DAC GPIO Configuration
-    PA5     ------> DAC_OUT2
+    PA4     ------> DAC_OUT1
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_5;
- 80009ee:	2320      	movs	r3, #32
+    GPIO_InitStruct.Pin = GPIO_PIN_4;
+ 80009ee:	2310      	movs	r3, #16
  80009f0:	617b      	str	r3, [r7, #20]
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
  80009f2:	2303      	movs	r3, #3
