@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,7 +57,7 @@ const osThreadAttr_t Task1_attributes = {
 osThreadId_t Task2Handle;
 const osThreadAttr_t Task2_attributes = {
   .name = "Task2",
-  .stack_size = 128 * 4,
+  .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for Task3 */
@@ -109,7 +109,6 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void
 /* USER CODE END 0 */
 
 /**
@@ -399,9 +398,13 @@ void StartTask2(void *argument)
   {
     for(; lut_index < SAW_PTS; lut_index++)
     {
-    	DAC->DHR12R2 = saw[lut_index];
+    	DAC->DHR12R1 = saw[lut_index];
+    	DAC1->DHR12R1 = saw[lut_index];
+    	DAC1->DHR12R1 = saw[lut_index];
+
     	osDelay(50);
     }
+    lut_index = 0;
 
   }
   /* USER CODE END StartTask2 */
