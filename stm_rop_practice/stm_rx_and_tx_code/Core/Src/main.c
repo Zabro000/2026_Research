@@ -331,7 +331,7 @@ static void MX_TIM2_Init(void)
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 2624;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
   {
     Error_Handler();
@@ -515,7 +515,7 @@ void StartTask2(void *argument)
 	  {
 		  if(led_speed == 1)
 		  {
-			  TIM2-> = 2624 / 2;
+			  TIM2->ARR = 2624 / 2;
 		  }
 		  else if(led_speed == 2)
 		  {
