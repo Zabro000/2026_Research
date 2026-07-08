@@ -470,11 +470,11 @@ int main(void)
   /* Init scheduler */
   osKernelInitialize();
  80005ba:	f004 f9c5 	bl	8004948 <osKernelInitialize>
-  /* add semaphores, ... */
   /* USER CODE END RTOS_SEMAPHORES */
 
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
+  ////////////////////////////////////////////////////////////////////////
   HAL_TIM_Base_Start(&htim2);
  80005be:	4817      	ldr	r0, [pc, #92]	@ (800061c <main+0x84>)
  80005c0:	f002 fc54 	bl	8002e6c <HAL_TIM_Base_Start>
@@ -1253,8 +1253,6 @@ void StartTask1(void *argument)
  8000a64:	60fb      	str	r3, [r7, #12]
 	  }
 
-
-
 	  if(temp_msg != 0)
  8000a66:	68fb      	ldr	r3, [r7, #12]
  8000a68:	2b00      	cmp	r3, #0
@@ -1308,11 +1306,11 @@ void StartTask2(void *argument)
 
   for(;;)
   {
-	  if(osMessageQueueGet(FreqQueueHandle, &led_speed, 0, 1000) == osOK)
+	  if(osMessageQueueGet(FreqQueueHandle, &led_speed, 0, osWaitForever) == osOK)
  8000abc:	4b14      	ldr	r3, [pc, #80]	@ (8000b10 <StartTask2+0x60>)
  8000abe:	6818      	ldr	r0, [r3, #0]
  8000ac0:	f107 010c 	add.w	r1, r7, #12
- 8000ac4:	f44f 737a 	mov.w	r3, #1000	@ 0x3e8
+ 8000ac4:	f04f 33ff 	mov.w	r3, #4294967295
  8000ac8:	2200      	movs	r2, #0
  8000aca:	f004 f907 	bl	8004cdc <osMessageQueueGet>
  8000ace:	4603      	mov	r3, r0
@@ -1355,7 +1353,7 @@ void StartTask2(void *argument)
 	  osDelay(1);
  8000b08:	2001      	movs	r0, #1
  8000b0a:	f003 fff9 	bl	8004b00 <osDelay>
-	  if(osMessageQueueGet(FreqQueueHandle, &led_speed, 0, 1000) == osOK)
+	  if(osMessageQueueGet(FreqQueueHandle, &led_speed, 0, osWaitForever) == osOK)
  8000b0e:	e7d5      	b.n	8000abc <StartTask2+0xc>
  8000b10:	2000021c 	.word	0x2000021c
 

@@ -174,6 +174,7 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
+  ////////////////////////////////////////////////////////////////////////
   HAL_TIM_Base_Start(&htim2);
 
   HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, saw, SAW_PTS, DAC_ALIGN_12B_R);
@@ -482,8 +483,6 @@ void StartTask1(void *argument)
 		  temp_msg = 3;
 	  }
 
-
-
 	  if(temp_msg != 0)
 	  {
 		  osMessageQueuePut(FreqQueueHandle, &temp_msg, 0, 10);
@@ -511,7 +510,7 @@ void StartTask2(void *argument)
 
   for(;;)
   {
-	  if(osMessageQueueGet(FreqQueueHandle, &led_speed, 0, 1000) == osOK)
+	  if(osMessageQueueGet(FreqQueueHandle, &led_speed, 0, osWaitForever) == osOK)
 	  {
 		  if(led_speed == 1)
 		  {
@@ -527,7 +526,6 @@ void StartTask2(void *argument)
 		  }
 	  }
 	  osDelay(1);
-
 
   }
   /* USER CODE END StartTask2 */
