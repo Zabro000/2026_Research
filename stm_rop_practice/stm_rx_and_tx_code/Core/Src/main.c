@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <string.h>
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -94,6 +95,7 @@ void StartTask3(void *argument);
 uint8_t *cmd_msg1 = "send a number between 1 and 10\n";
 uint8_t *cmd = "fast\n";
 uint8_t *cmd3 = "slow\n";
+uint8_t *cmd4 = "reset\n";
 uint8_t *cmd2 = "echo\n";
 
 uint32_t saw[SAW_PTS] = {0,251,503,754,1006,1257,1509,1761,2012,
@@ -101,7 +103,7 @@ uint32_t saw[SAW_PTS] = {0,251,503,754,1006,1257,1509,1761,2012,
 						2515,2264,2012,1761,1509,1257,1006,754,503,251,0};
 
 uint8_t DATA[BUFFER] = {'\0'};
-uint16_t data_length = 0;
+volatile uint16_t data_length = 0;
 
 uint8_t uart_int_var = 0;
 
@@ -173,6 +175,7 @@ int main(void)
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   HAL_TIM_Base_Start(&htim2);
+
   HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, saw, SAW_PTS, DAC_ALIGN_12B_R);
   /* USER CODE END RTOS_TIMERS */
 
@@ -449,7 +452,7 @@ void StartTask1(void *argument)
 
   /* Infinite loop */
 	uint8_t CMD[BUFFER] = {'\0'};
-	int temp_msg = 0;
+	volatile int temp_msg = 0;
 
 
   for(;;)
@@ -461,17 +464,32 @@ void StartTask1(void *argument)
 		  HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
 		  temp_msg = 1;
 	  }
+	  else if((!strcmp(DATA, cmd3)) && (uart_int_var == 1))
+	  {
+		 osDelay(10);
+		 HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
+		 temp_msg = 2;
+	  }
 	  else if((!strcmp(DATA, cmd2)) && (uart_int_var == 1))
 	  {
 		  osDelay(10);
 		  HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
 	  }
+	  else if((!strcmp(DATA, cmd4)) && (uart_int_var == 1))
+	  {
+		  osDelay(10);
+		  HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
+		  temp_msg = 3;
+	  }
+
+
 
 	  if(temp_msg != 0)
 	  {
-		  osMessageQueuePut(FreqQueueHandle, &temp_msg, 0, 1000);
+		  osMessageQueuePut(FreqQueueHandle, &temp_msg, 0, 10);
 	  }
 	  uart_int_var = 0;
+	  osDelay(20);
 
   }
   /* USER CODE END 5 */
@@ -488,7 +506,7 @@ void StartTask2(void *argument)
 {
   /* USER CODE BEGIN StartTask2 */
   /* Infinite loop */
-  int led_speed = 0;
+  volatile int led_speed = 0;
   // Define the timer:
 
   for(;;)
@@ -497,9 +515,20 @@ void StartTask2(void *argument)
 	  {
 		  if(led_speed == 1)
 		  {
-			  TIM2->ARR = 2624 / 2;
+			  TIM2-> = 2624 / 2;
+		  }
+		  else if(led_speed == 2)
+		  {
+			  TIM2->ARR = 2624 * 2;
+		  }
+		  else if(led_speed == 3)
+		  {
+			  TIM2->ARR = 2624;
 		  }
 	  }
+	  osDelay(1);
+
+
   }
   /* USER CODE END StartTask2 */
 }
