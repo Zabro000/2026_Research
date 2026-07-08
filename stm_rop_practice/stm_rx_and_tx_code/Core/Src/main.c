@@ -449,7 +449,7 @@ void StartTask1(void *argument)
 
   /* Infinite loop */
 	uint8_t CMD[BUFFER] = {'\0'};
-	int copy_flag = 0;
+	int temp_msg = 0;
 
 
   for(;;)
@@ -459,7 +459,7 @@ void StartTask1(void *argument)
 	  {
 		  osDelay(10);
 		  HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
-		  copy_flag = 1;
+		  temp_msg = 1;
 	  }
 	  else if((!strcmp(DATA, cmd2)) && (uart_int_var == 1))
 	  {
@@ -467,13 +467,10 @@ void StartTask1(void *argument)
 		  HAL_UART_Transmit(&huart2, DATA, data_length, 1000);
 	  }
 
-	  if(copy_flag == 1)
+	  if(temp_msg != 0)
 	  {
-		  strcpy(CMD, DATA);
-		  copy_flag = 0;
+		  osMessageQueuePut(FreqQueueHandle, &temp_msg, 0, 1000);
 	  }
-
-
 	  uart_int_var = 0;
 
   }
@@ -491,11 +488,18 @@ void StartTask2(void *argument)
 {
   /* USER CODE BEGIN StartTask2 */
   /* Infinite loop */
-  int lut_index = 0;
+  int led_speed = 0;
   // Define the timer:
 
   for(;;)
   {
+	  if(osMessageQueueGet(FreqQueueHandle, &led_speed, 0, 1000) == osOK)
+	  {
+		  if(led_speed == 1)
+		  {
+			  TIM2->ARR = 2624 / 2;
+		  }
+	  }
   }
   /* USER CODE END StartTask2 */
 }
