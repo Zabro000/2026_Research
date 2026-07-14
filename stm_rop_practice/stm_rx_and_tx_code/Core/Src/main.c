@@ -34,6 +34,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define BUFFER 40
+#define I2C_BUFFER 16
 #define SAW_PTS 32
 /* USER CODE END PD */
 
@@ -45,6 +46,8 @@
 /* Private variables ---------------------------------------------------------*/
 DAC_HandleTypeDef hdac;
 DMA_HandleTypeDef hdma_dac1;
+
+I2C_HandleTypeDef hi2c1;
 
 TIM_HandleTypeDef htim2;
 
@@ -87,6 +90,7 @@ static void MX_DMA_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_DAC_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_I2C1_Init(void);
 void StartTask1(void *argument);
 void StartTask2(void *argument);
 void StartTask3(void *argument);
@@ -105,6 +109,10 @@ uint32_t saw[SAW_PTS] = {0,251,503,754,1006,1257,1509,1761,2012,
 uint8_t DATA[BUFFER] = {'\0'};
 volatile uint16_t data_length = 0;
 
+uint8_t I2C_DATA[I2C_BUFFER] = {'\0'};
+volatile uint16_t i2c_data_length = 0;
+
+
 uint8_t uart_int_var = 0;
 
 
@@ -115,6 +123,19 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 	HAL_UARTEx_ReceiveToIdle_IT(&huart2, DATA, BUFFER);
 	DATA[data_length] = '\0';
 	uart_int_var = 1;
+
+}
+
+void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+	if(hi2c->Instance == I2C1)
+	{
+
+	}
+}
+
+void HAL_I2C_MasterRxCpltCallback (I2C_HandleTypeDef * hi2c)
+{
 
 }
 
@@ -157,6 +178,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_DAC_Init();
   MX_TIM2_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -306,6 +328,40 @@ static void MX_DAC_Init(void)
   /* USER CODE BEGIN DAC_Init 2 */
 
   /* USER CODE END DAC_Init 2 */
+
+}
+
+/**
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
 
 }
 
@@ -542,9 +598,22 @@ void StartTask3(void *argument)
 {
   /* USER CODE BEGIN StartTask3 */
   /* Infinite loop */
+	const int addr = 0x68;
+	uint8_t i2c_init1 = 0x6b, i2c_init2 = 0;
+
+	//// To initalize the mpu
+
+	if(HAL_I2C_IsDeviceReady(&hi2c1, addr, 5, 1000) == HAL_OK)
+	{
+		HAL_I2C_Master_Seq_Transmit_IT(&hi2c1, addr, &i2c_init1, 1, I2C_FIRST_AND_LAST_FRAME);
+		HAL_I2C_Master_Seq_Transmit_IT(&hi2c1, addr, &i2c_init2, 1, I2C_FIRST_AND_LAST_FRAME);
+	}
+
+	osDelay(100);
   for(;;)
   {
-    osDelay(1);
+	  HAL_I2C_Master_Receive_IT(&hi2c1, addr, I2C_DATA, i2c_data_length);
+	  osDelay(10);
   }
   /* USER CODE END StartTask3 */
 }
