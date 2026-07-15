@@ -599,7 +599,7 @@ void StartTask3(void *argument)
   /* USER CODE BEGIN StartTask3 */
   /* Infinite loop */
 	const int addr = 0x68;
-	uint8_t i2c_init1 = 0x6b, i2c_init2 = 0;
+	uint8_t i2c_init1 = 0x6b, i2c_init2 = 0, i2c_init3 = 0x3b;
 
 	//// To initalize the mpu
 
@@ -607,6 +607,8 @@ void StartTask3(void *argument)
 	{
 		HAL_I2C_Master_Seq_Transmit_IT(&hi2c1, addr, &i2c_init1, 1, I2C_FIRST_AND_LAST_FRAME);
 		HAL_I2C_Master_Seq_Transmit_IT(&hi2c1, addr, &i2c_init2, 1, I2C_FIRST_AND_LAST_FRAME);
+		HAL_I2C_Master_Seq_Transmit_IT(&hi2c1, addr, &i2c_init3, 1, I2C_FIRST_AND_LAST_FRAME);
+
 	}
 
 	osDelay(100);
