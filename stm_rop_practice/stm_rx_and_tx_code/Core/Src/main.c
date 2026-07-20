@@ -134,11 +134,11 @@ void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
 	}
 }
 
-void HAL_I2C_MasterRxCpltCallback (I2C_HandleTypeDef * hi2c)
+
+void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
 
 }
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -598,8 +598,21 @@ void StartTask3(void *argument)
 {
   /* USER CODE BEGIN StartTask3 */
   /* Infinite loop */
-	const int addr = 0x68;
+	const uint8_t addr = 0x68 << 1; //address of the IC and manditory left shift
+	uint8_t check;
+	HAL_StatusTypeDef ret;
+	uint16_t data;
+	float data_proc;
 	uint8_t i2c_init1 = 0x6b, i2c_init2 = 0, i2c_init3 = 0x3b;
+
+
+	HAL_I2C_Mem_Read(&hi2c1, addr, 0x75, 1, &check, 1, 1000);
+	if (check == 0x68)
+	{
+		// Do something... maybe in the LED task
+	}
+
+	HAL_I2C_Mem_Write_IT(&hi2c1, addr, 0x6B, 1, 0, 1);
 
 	//// To initalize the mpu
 
@@ -608,7 +621,6 @@ void StartTask3(void *argument)
 		HAL_I2C_Master_Seq_Transmit_IT(&hi2c1, addr, &i2c_init1, 1, I2C_FIRST_AND_LAST_FRAME);
 		HAL_I2C_Master_Seq_Transmit_IT(&hi2c1, addr, &i2c_init2, 1, I2C_FIRST_AND_LAST_FRAME);
 		HAL_I2C_Master_Seq_Transmit_IT(&hi2c1, addr, &i2c_init3, 1, I2C_FIRST_AND_LAST_FRAME);
-
 	}
 
 	osDelay(100);
