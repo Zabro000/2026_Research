@@ -22,6 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <string.h>
 
 /* USER CODE END Includes */
 
@@ -494,7 +495,8 @@ void StartTask1(void *argument)
 	static uint8_t MEM_ADDR_SIZE = 1;
 	static uint8_t DATA_SIZE = 1;
 	uint8_t data_var;
-	static uint8_t good_message[] = "IC is connected\n";
+	uint8_t *good_message = "IC is connected\n";
+	uint8_t good_message_len = strlen(good_message);
 	float final_number;
 	uint8_t print_number;
 
@@ -518,12 +520,6 @@ void StartTask1(void *argument)
 	HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, 0x1C, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
 
 	///IC Config complete
-
-
-
-
-
-
 
   for(;;)
   {
