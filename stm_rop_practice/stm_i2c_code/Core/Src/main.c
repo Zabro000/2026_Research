@@ -497,15 +497,21 @@ void StartTask1(void *argument)
 	uint8_t data_var;
 	uint8_t *good_message = "IC is connected\n";
 	uint8_t good_message_len = strlen(good_message);
+	uint8_t *bad_message = "IC is not connected\n";
+	uint8_t bad_mssage_len = strlen(bad_message);
 	float final_number;
 	uint8_t print_number;
 
-	serial_message_print(good_message, sizeof(good_message));
+	serial_message_print(good_message, good_message_len);
 
-	HAL_I2C_Mem_Read_IT(&hi2c1, ADDR_SHIFT, 0x75, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
+	HAL_I2C_Mem_Read(&hi2c1, ADDR_SHIFT, 0x75, MEM_ADDR_SIZE, &data_var, DATA_SIZE,1000);
 	if (data_var == ADDR)
 	{
-		serial_message_print(good_message, sizeof(good_message));
+		serial_message_print(good_message, good_message_len);
+	}
+	else
+	{
+		serial_message_print(bad_message, bad_mssage_len);
 	}
 
 	///IC Config start
