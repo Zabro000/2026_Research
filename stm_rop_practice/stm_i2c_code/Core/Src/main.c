@@ -118,15 +118,19 @@ void serial_message_print(uint8_t *msg, uint8_t msg_len)
 }
 
 
-void IC_read_data(uint8_t ADDR)
+void IC_read_data(uint8_t ADDR, float *accel)
 {
 	static uint8_t DATA_ARR_SIZE = 6;
 	uint8_t data_array[DATA_ARR_SIZE];
 	static uint8_t DATA_ADDR = 0x3B;
+	float ACCEL_DIVISION = 16384.0;
 
 	HAL_I2C_Mem_Read_IT(&hi2c1, ADDR, DATA_ADDR, 1, data_array, DATA_ARR_SIZE);
 
 	uint16_t accel_x_raw  = data_array[0] << 8 | data_array[1];
+	float accel_x = (float)(accel_x_raw / ACCEL_DIVISION);
+	*accel = accel_x;
+
 }
 
 /* USER CODE END 0 */
@@ -485,16 +489,18 @@ void StartTask1(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
-	static uint8_t ADDR = 0x68;
-	static uint8_t ADDR_SHIFT = ADDR << 1;
+	uint8_t ADDR = 0x68;
+	uint8_t ADDR_SHIFT = ADDR << 1;
 	static uint8_t MEM_ADDR_SIZE = 1;
 	static uint8_t DATA_SIZE = 1;
 	uint8_t data_var;
 	static uint8_t good_message[] = "IC is connected\n";
+	float final_number;
+	uint8_t print_number;
 
 	serial_message_print(good_message, sizeof(good_message));
 
-	HAL_I2C_Mem_Read_IT(&hi2c1, ADDR_SHIFT, 0x75, MEM_ADDR_SIZE, data_var, DATA_SIZE);
+	HAL_I2C_Mem_Read_IT(&hi2c1, ADDR_SHIFT, 0x75, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
 	if (data_var == ADDR)
 	{
 		serial_message_print(good_message, sizeof(good_message));
@@ -521,7 +527,12 @@ void StartTask1(void *argument)
 
   for(;;)
   {
-    osDelay(1);
+
+	  IC_read_data(ADDR_SHIFT, &final_number);
+	  print_number = (uint8_t)final_number;
+	  serial_message_print(&print_number, sizeof(print_number));
+
+	  osDelay(10);
   }
   /* USER CODE END 5 */
 }
