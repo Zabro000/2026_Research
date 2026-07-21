@@ -79,6 +79,18 @@ const osMessageQueueAttr_t FreqQueue_attributes = {
 };
 /* USER CODE BEGIN PV */
 
+uint8_t ADDR = 0x68;
+uint8_t ADDR_SHIFT;
+uint8_t MEM_ADDR;
+uint8_t MEM_ADDR_SIZE = 1;
+uint8_t DATA_SIZE = 1;
+uint8_t data_var;
+uint8_t *good_message = "IC is connected\n";
+uint8_t good_message_len;
+uint8_t *bad_message = "IC is not connected\n";
+uint8_t bad_mssage_len;
+float final_number;
+uint8_t print_number;
 
 /* USER CODE END PV */
 
@@ -103,12 +115,12 @@ void StartTask3(void *argument);
 /* USER CODE BEGIN 0 */
 void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-
+	HAL_I2C_Mem_Read_IT(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
 }
 
 void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-
+	HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
 }
 
 
@@ -490,21 +502,15 @@ void StartTask1(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
-	uint8_t ADDR = 0x68;
-	uint8_t ADDR_SHIFT = ADDR << 1;
-	static uint8_t MEM_ADDR_SIZE = 1;
-	static uint8_t DATA_SIZE = 1;
-	uint8_t data_var;
-	uint8_t *good_message = "IC is connected\n";
-	uint8_t good_message_len = strlen(good_message);
-	uint8_t *bad_message = "IC is not connected\n";
-	uint8_t bad_mssage_len = strlen(bad_message);
-	float final_number;
-	uint8_t print_number;
+	ADDR_SHIFT = ADDR << 1;
+	good_message_len = strlen(good_message);
+	bad_mssage_len = strlen(bad_message);
 
 	serial_message_print(good_message, good_message_len);
 
-	HAL_I2C_Mem_Read(&hi2c1, ADDR_SHIFT, 0x75, MEM_ADDR_SIZE, &data_var, DATA_SIZE,1000);
+
+	MEM_ADDR = 0x75;
+	HAL_I2C_Mem_Read_IT(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
 	if (data_var == ADDR)
 	{
 		serial_message_print(good_message, good_message_len);
@@ -516,14 +522,18 @@ void StartTask1(void *argument)
 
 	///IC Config start
 	data_var = 0;
-	HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, 0x6B, 1, &data_var, DATA_SIZE);
+	MEM_ADDR = 0x6B;
+	HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
 
 	data_var = 0x07;
-	HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, 0x19, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
+	MEM_ADDR = 0x19;
+	HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
 
 	data_var = 0;
-	HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, 0x1B, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
-	HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, 0x1C, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
+	MEM_ADDR = 0x1B;
+	HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
+	MEM_ADDR = 0x1C;
+	HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
 
 	///IC Config complete
 
