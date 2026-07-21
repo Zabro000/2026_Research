@@ -113,22 +113,25 @@ void StartTask3(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
-{
-	HAL_I2C_Mem_Read_IT(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
-}
-
-void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
-{
-	HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
-}
-
-
 void serial_message_print(uint8_t *msg, uint8_t msg_len)
 {
 	HAL_UART_Transmit(&huart2, msg, msg_len, 1000);
 	osDelay(1);
 }
+
+void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+	HAL_I2C_Mem_Read(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE, 1000);
+	serial_message_print(good_message, good_message_len);
+}
+
+void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+	//HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
+	serial_message_print(good_message, good_message_len);
+}
+
+
 
 
 void IC_read_data(uint8_t ADDR, float *accel)
@@ -510,7 +513,7 @@ void StartTask1(void *argument)
 
 
 	MEM_ADDR = 0x75;
-	HAL_I2C_Mem_Read_IT(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
+	HAL_I2C_Mem_Read_IT(&hi2c1, ADDR_SHIFT, 0x75, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
 	if (data_var == ADDR)
 	{
 		serial_message_print(good_message, good_message_len);
@@ -544,7 +547,7 @@ void StartTask1(void *argument)
 	  print_number = (uint8_t)final_number;
 	  serial_message_print(&print_number, sizeof(print_number));
 
-	  osDelay(10);
+	  osDelay(2000);
   }
   /* USER CODE END 5 */
 }
