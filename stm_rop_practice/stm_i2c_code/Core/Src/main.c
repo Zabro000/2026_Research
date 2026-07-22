@@ -121,26 +121,6 @@ void serial_message_print(uint8_t *msg, uint8_t msg_len)
 	osDelay(1);
 }
 
-void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
-{
-	///HAL_I2C_Mem_Read(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE, 1000);
-	///serial_message_print(isr, isr_len);
-}
-
-void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
-{
-	//HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
-	serial_message_print(isr, isr_len);
-	serial_message_print(good_message, good_message_len);
-}
-
-void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c)
-{
-	//HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
-	serial_message_print(isr, isr_len);
-	serial_message_print(good_message, good_message_len);
-}
-
 
 
 void IC_read_data(uint8_t ADDR, float *accel)
@@ -523,10 +503,11 @@ void StartTask1(void *argument)
 
 
 	MEM_ADDR = 0x75;
-	check = HAL_I2C_Mem_Read_IT(&hi2c1, ADDR_SHIFT, 0x75, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
-	check = HAL_I2C_Mem_Read_IT(&hi2c1, ADDR_SHIFT, 0x75, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
-	osDelay(10);
-	if (data_var == ADDR)
+	check = HAL_I2C_Mem_Read(&hi2c1, 0x68 << 1, 0x75, 1, &data_var, 1, 1000);
+	serial_message_print(good_message, good_message_len);
+	serial_message_print(&data_var, 1);
+
+	if (data_var == 0x68)
 	{
 		serial_message_print(good_message, good_message_len);
 	}
