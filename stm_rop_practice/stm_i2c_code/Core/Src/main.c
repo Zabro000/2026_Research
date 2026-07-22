@@ -88,6 +88,8 @@ uint8_t data_var;
 uint8_t *good_message = "IC is connected\n";
 uint8_t good_message_len;
 uint8_t *bad_message = "IC is not connected\n";
+uint8_t *isr = "ISR\n";
+uint8_t isr_len;
 uint8_t bad_mssage_len;
 float final_number;
 uint8_t print_number;
@@ -121,16 +123,23 @@ void serial_message_print(uint8_t *msg, uint8_t msg_len)
 
 void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-	HAL_I2C_Mem_Read(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE, 1000);
-	serial_message_print(good_message, good_message_len);
+	///HAL_I2C_Mem_Read(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE, 1000);
+	///serial_message_print(isr, isr_len);
 }
 
 void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
 	//HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
+	serial_message_print(isr, isr_len);
 	serial_message_print(good_message, good_message_len);
 }
 
+void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+	//HAL_I2C_Mem_Write_IT(&hi2c1, ADDR_SHIFT, MEM_ADDR, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
+	serial_message_print(isr, isr_len);
+	serial_message_print(good_message, good_message_len);
+}
 
 
 
@@ -508,12 +517,15 @@ void StartTask1(void *argument)
 	ADDR_SHIFT = ADDR << 1;
 	good_message_len = strlen(good_message);
 	bad_mssage_len = strlen(bad_message);
-
+	isr_len = strlen(isr);
 	serial_message_print(good_message, good_message_len);
+	HAL_StatusTypeDef check;
 
 
 	MEM_ADDR = 0x75;
-	HAL_I2C_Mem_Read_IT(&hi2c1, ADDR_SHIFT, 0x75, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
+	check = HAL_I2C_Mem_Read_IT(&hi2c1, ADDR_SHIFT, 0x75, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
+	check = HAL_I2C_Mem_Read_IT(&hi2c1, ADDR_SHIFT, 0x75, MEM_ADDR_SIZE, &data_var, DATA_SIZE);
+	osDelay(10);
 	if (data_var == ADDR)
 	{
 		serial_message_print(good_message, good_message_len);
@@ -521,6 +533,12 @@ void StartTask1(void *argument)
 	else
 	{
 		serial_message_print(bad_message, bad_mssage_len);
+
+	}
+
+	if (check == HAL_BUSY)
+	{
+		serial_message_print(isr, isr_len);
 	}
 
 	///IC Config start
