@@ -20,6 +20,9 @@
 #include "main.h"
 #include "cmsis_os.h"
 
+#include <string.h>
+#include <stdio.h>
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -32,7 +35,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+	# define MEM_SIZE 1
+	# define DATA_SIZE 1
+	# define TIMEOUT 1000
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -98,7 +103,26 @@ void StartTask3(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void serial_message_print(uint8_t *msg, uint8_t msg_len)
+{
+	HAL_UART_Transmit(&huart2, msg, msg_len, 1000);
+	osDelay(1);
+}
 
+
+void read_data(uint8_t addr, float *accelx)
+{
+	uint8_t raw_data[6];
+	uint16_t accel_x_raw;
+
+
+	HAL_I2C_Mem_Read(&hi2c1, addr, 0x3B, MEM_SIZE, raw_data, 6, 1000);
+	accel_x_raw = (uint16_t)(raw_data[0] << 8 | raw_data[1]);
+	*accelx = accel_x_raw / 16384.0;
+
+
+
+}
 /* USER CODE END 0 */
 
 /**
@@ -455,9 +479,62 @@ void StartTask1(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
-  for(;;)
+	uint8_t check;
+	uint8_t data;
+	uint8_t addr_b = 0x68;
+	uint8_t addr = 0x68 << 1;
+
+	uint8_t *good_message = "IC isssss connected\n";
+	uint8_t good_message_len = strlen(good_message);
+
+	uint8_t *bad_message = "IC is NOT connected\n";
+	uint8_t bad_message_len = strlen(bad_message);
+	uint8_t *tx_message;
+	uint8_t tx_message_len;
+
+
+	uint8_t mema_1 = 0x75;
+	uint8_t mema_2 = 0x6B;
+	uint8_t mema_3 = 0x19;
+	uint8_t mema_4 = 0x1B, mema_5 = 0x1C;
+
+	float accel_x_print_out;
+
+	char str[20];
+	uint8_t str_len;
+
+	HAL_I2C_Mem_Read(&hi2c1, addr, mema_1, MEM_SIZE, &check, DATA_SIZE, TIMEOUT);
+
+	if (check == addr_b)
+	{
+		serial_message_print(good_message, good_message_len);
+
+	}
+	else
+	{
+		serial_message_print(bad_message, bad_message_len);
+	}
+
+	data = 0x00;
+	HAL_I2C_Mem_Write(&hi2c1, addr, mema_2, MEM_SIZE, &data, DATA_SIZE, TIMEOUT);
+
+	data = 0x07;
+	HAL_I2C_Mem_Write(&hi2c1, addr, mema_3, MEM_SIZE, &data, DATA_SIZE, TIMEOUT);
+
+	data = 0x00;
+	HAL_I2C_Mem_Write(&hi2c1, addr, mema_4, MEM_SIZE, &data, DATA_SIZE, TIMEOUT);
+	HAL_I2C_Mem_Write(&hi2c1, addr, mema_5, MEM_SIZE, &data, DATA_SIZE, TIMEOUT);
+
+	for(;;)
   {
-    osDelay(1);
+
+
+		read_data(addr, &accel_x_print_out);
+		sprintf(str, "%f", accel_x_print_out);
+		str_len = strlen(str);
+		serial_message_print(str, str_len);
+
+		osDelay(100);
   }
   /* USER CODE END 5 */
 }
