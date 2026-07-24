@@ -20,12 +20,10 @@
 #include "main.h"
 #include "cmsis_os.h"
 
-#include <string.h>
-#include <stdio.h>
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,14 +57,14 @@ UART_HandleTypeDef huart2;
 osThreadId_t Task1Handle;
 const osThreadAttr_t Task1_attributes = {
   .name = "Task1",
-  .stack_size = 2048 * 4,
+  .stack_size = 2500 * 4,
   .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for Task2 */
 osThreadId_t Task2Handle;
 const osThreadAttr_t Task2_attributes = {
   .name = "Task2",
-  .stack_size = 1024 * 4,
+  .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for Task3 */
@@ -112,15 +110,15 @@ void serial_message_print(uint8_t *msg, uint8_t msg_len)
 
 void read_accel_data(uint8_t addr, float *accelx, float *accely, float *accelz)
 {
-	uint8_t raw_data[6];
-	uint16_t accel_x_raw, accel_y_raw, accel_z_raw;
+	int8_t raw_data[6];
+	int16_t accel_x_raw, accel_y_raw, accel_z_raw;
 
 
 	HAL_I2C_Mem_Read(&hi2c1, addr, 0x3B, MEM_SIZE, raw_data, 6, 1000);
 
-	accel_x_raw = (uint16_t)(raw_data[0] << 8 | raw_data[1]);
-	accel_y_raw = (uint16_t)(raw_data[2] << 8 | raw_data[3]);
-	accel_z_raw = (uint16_t)(raw_data[4] << 8 | raw_data[5]);
+	accel_x_raw = (int16_t)(raw_data[0] << 8 | raw_data[1]);
+	accel_y_raw = (int16_t)(raw_data[2] << 8 | raw_data[3]);
+	accel_z_raw = (int16_t)(raw_data[4] << 8 | raw_data[5]);
 
 	*accelx = accel_x_raw / 16384.0;
 	*accely = accel_y_raw / 16384.0;
@@ -130,15 +128,15 @@ void read_accel_data(uint8_t addr, float *accelx, float *accely, float *accelz)
 
 void read_gyro_data(uint8_t addr, float *gyrox, float *gyroy, float *gyroz)
 {
-	uint8_t raw_data[6];
-	uint16_t gryo_x_raw, gryo_y_raw, gryo_z_raw;
+	int8_t raw_data[6];
+	int16_t gryo_x_raw, gryo_y_raw, gryo_z_raw;
 
 
 	HAL_I2C_Mem_Read(&hi2c1, addr, 0x43, MEM_SIZE, raw_data, 6, 1000);
 
-	gryo_x_raw = (uint16_t)(raw_data[0] << 8 | raw_data[1]);
-	gryo_y_raw = (uint16_t)(raw_data[2] << 8 | raw_data[3]);
-	gryo_z_raw = (uint16_t)(raw_data[4] << 8 | raw_data[5]);
+	gryo_x_raw = (int16_t)(raw_data[0] << 8 | raw_data[1]);
+	gryo_y_raw = (int16_t)(raw_data[2] << 8 | raw_data[3]);
+	gryo_z_raw = (int16_t)(raw_data[4] << 8 | raw_data[5]);
 
 	*gyrox = gryo_x_raw / 131.0;
 	*gyroy = gryo_y_raw / 131.0;
@@ -514,10 +512,10 @@ void StartTask1(void *argument)
 	uint8_t addr_b = 0x68;
 	uint8_t addr = 0x68 << 1;
 
-	uint8_t *good_message = "IC isssss connected\n";
+	uint8_t *good_message = "IMU is connected\n";
 	uint8_t good_message_len = strlen(good_message);
 
-	uint8_t *bad_message = "IC is NOT connected\n";
+	uint8_t *bad_message = "IMU is not connected\n";
 	uint8_t bad_message_len = strlen(bad_message);
 	uint8_t *tx_message;
 	uint8_t tx_message_len;
@@ -567,7 +565,7 @@ void StartTask1(void *argument)
 		print_data(gyro_y_print_out);
 		print_data(gyro_z_print_out);
 		serial_message_print("\n", strlen("\n"));
-		osDelay(1000);
+		osDelay(100);
   }
   /* USER CODE END 5 */
 }
