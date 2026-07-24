@@ -110,7 +110,7 @@ void serial_message_print(uint8_t *msg, uint8_t msg_len)
 
 void read_accel_data(uint8_t addr, float *accelx, float *accely, float *accelz)
 {
-	int8_t raw_data[6];
+	uint8_t raw_data[6];
 	int16_t accel_x_raw, accel_y_raw, accel_z_raw;
 
 
@@ -128,7 +128,7 @@ void read_accel_data(uint8_t addr, float *accelx, float *accely, float *accelz)
 
 void read_gyro_data(uint8_t addr, float *gyrox, float *gyroy, float *gyroz)
 {
-	int8_t raw_data[6];
+	uint8_t raw_data[6];
 	int16_t gryo_x_raw, gryo_y_raw, gryo_z_raw;
 
 
