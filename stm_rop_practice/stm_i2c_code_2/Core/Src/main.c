@@ -110,18 +110,31 @@ void serial_message_print(uint8_t *msg, uint8_t msg_len)
 }
 
 
-void read_data(uint8_t addr, float *accelx)
+void read_data(uint8_t addr, float *accelx, float *accely, float *accelz)
 {
 	uint8_t raw_data[6];
-	uint16_t accel_x_raw;
+	uint16_t accel_x_raw, accel_y_raw, accel_z_raw;
 
 
 	HAL_I2C_Mem_Read(&hi2c1, addr, 0x3B, MEM_SIZE, raw_data, 6, 1000);
+
 	accel_x_raw = (uint16_t)(raw_data[0] << 8 | raw_data[1]);
+	accel_y_raw = (uint16_t)(raw_data[2] << 8 | raw_data[3]);
+	accel_z_raw = (uint16_t)(raw_data[4] << 8 | raw_data[5]);
+
 	*accelx = accel_x_raw / 16384.0;
+	*accely = accel_y_raw / 16384.0;
+	*accelz = accel_z_raw / 16384.0;
 
+}
 
+void print_data(float number)
+{
+	char str[20];
 
+	sprintf(str, "%f", number);
+	strcat(str, "\n");
+	serial_message_print(str, strlen(str));
 }
 /* USER CODE END 0 */
 
@@ -498,10 +511,8 @@ void StartTask1(void *argument)
 	uint8_t mema_3 = 0x19;
 	uint8_t mema_4 = 0x1B, mema_5 = 0x1C;
 
-	float accel_x_print_out;
+	float accel_x_print_out, accel_y_print_out, accel_z_print_out;
 
-	char str[20];
-	uint8_t str_len;
 
 	HAL_I2C_Mem_Read(&hi2c1, addr, mema_1, MEM_SIZE, &check, DATA_SIZE, TIMEOUT);
 
@@ -528,12 +539,10 @@ void StartTask1(void *argument)
 	for(;;)
   {
 
-
-		read_data(addr, &accel_x_print_out);
-		sprintf(str, "%f", accel_x_print_out);
-		str_len = strlen(str);
-		serial_message_print(str, str_len);
-
+		read_data(addr, &accel_x_print_out, &accel_y_print_out, &accel_z_print_out);
+		print_data(accel_x_print_out);
+		print_data(accel_y_print_out);
+		print_data(accel_z_print_out);
 		osDelay(100);
   }
   /* USER CODE END 5 */
