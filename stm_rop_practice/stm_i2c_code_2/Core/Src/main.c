@@ -110,7 +110,7 @@ void serial_message_print(uint8_t *msg, uint8_t msg_len)
 }
 
 
-void read_data(uint8_t addr, float *accelx, float *accely, float *accelz)
+void read_accel_data(uint8_t addr, float *accelx, float *accely, float *accelz)
 {
 	uint8_t raw_data[6];
 	uint16_t accel_x_raw, accel_y_raw, accel_z_raw;
@@ -128,6 +128,23 @@ void read_data(uint8_t addr, float *accelx, float *accely, float *accelz)
 
 }
 
+void read_gyro_data(uint8_t addr, float *gyrox, float *gyroy, float *gyroz)
+{
+	uint8_t raw_data[6];
+	uint16_t gryo_x_raw, gryo_y_raw, gryo_z_raw;
+
+
+	HAL_I2C_Mem_Read(&hi2c1, addr, 0x43, MEM_SIZE, raw_data, 6, 1000);
+
+	gryo_x_raw = (uint16_t)(raw_data[0] << 8 | raw_data[1]);
+	gryo_y_raw = (uint16_t)(raw_data[2] << 8 | raw_data[3]);
+	gryo_z_raw = (uint16_t)(raw_data[4] << 8 | raw_data[5]);
+
+	*gyrox = gryo_x_raw / 131.0;
+	*gyroy = gryo_y_raw / 131.0;
+	*gyroz = gryo_z_raw / 131.0;
+
+}
 void print_data(float number)
 {
 	char str[20];
@@ -512,6 +529,7 @@ void StartTask1(void *argument)
 	uint8_t mema_4 = 0x1B, mema_5 = 0x1C;
 
 	float accel_x_print_out, accel_y_print_out, accel_z_print_out;
+	float gyro_x_print_out, gyro_y_print_out, gyro_z_print_out;
 
 
 	HAL_I2C_Mem_Read(&hi2c1, addr, mema_1, MEM_SIZE, &check, DATA_SIZE, TIMEOUT);
@@ -539,11 +557,17 @@ void StartTask1(void *argument)
 	for(;;)
   {
 
-		read_data(addr, &accel_x_print_out, &accel_y_print_out, &accel_z_print_out);
+		read_accel_data(addr, &accel_x_print_out, &accel_y_print_out, &accel_z_print_out);
+		read_gyro_data(addr, &gyro_x_print_out, &gyro_y_print_out, &gyro_z_print_out);
+
 		print_data(accel_x_print_out);
 		print_data(accel_y_print_out);
 		print_data(accel_z_print_out);
-		osDelay(100);
+		print_data(gyro_x_print_out);
+		print_data(gyro_y_print_out);
+		print_data(gyro_z_print_out);
+		serial_message_print("\n", strlen("\n"));
+		osDelay(1000);
   }
   /* USER CODE END 5 */
 }
