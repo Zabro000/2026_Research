@@ -64,7 +64,7 @@ UART_HandleTypeDef huart2;
 osThreadId_t Task1Handle;
 const osThreadAttr_t Task1_attributes = {
   .name = "Task1",
-  .stack_size = 2048 * 4,
+  .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for Task2 */
@@ -78,7 +78,7 @@ const osThreadAttr_t Task2_attributes = {
 osThreadId_t Task3Handle;
 const osThreadAttr_t Task3_attributes = {
   .name = "Task3",
-  .stack_size = 128 * 4,
+  .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for FreqQueue */
@@ -124,6 +124,10 @@ volatile uint16_t i2c_data_length = 0;
 uint8_t uart_int_var = 0;
 
 uint8_t i2c_addr = 0x68 << 1;
+
+
+uint16_t pwm_data[1] = {10};
+
 
 
 
@@ -254,13 +258,15 @@ int main(void)
   /* start timers, add new ones, ... */
   ////////////////////////////////////////////////////////////////////////
   HAL_TIM_Base_Start(&htim2);
+  HAL_TIM_Base_Start(&htim1);
 
   HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, saw, SAW_PTS, DAC_ALIGN_12B_R);
+  HAL_TIM_PWM_Start_DMA(&htim1, TIM_CHANNEL_1, (uint32_t *)pwm_data, 1);
   /* USER CODE END RTOS_TIMERS */
 
   /* Create the queue(s) */
   /* creation of FreqQueue */
-  FreqQueueHandle = osMessageQueueNew (10, sizeof(int), &FreqQueue_attributes);
+  FreqQueueHandle = osMessageQueueNew(10, sizeof(int), &FreqQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -749,9 +755,10 @@ void StartTask3(void *argument)
 	imu_init(i2c_addr);
 	osDelay(100);
 
+
   for(;;)
   {
-	  read_gyro_data(addr, &gyro_x_print_out, &gyro_y_print_out, &gyro_z_print_out);
+	  read_gyro_data(i2c_addr, &gyro_x_print_out, &gyro_y_print_out, &gyro_z_print_out);
 
 	  gyro_x_print_out = gyro_x_print_out > 0 ? gyro_x_print_out : -gyro_x_print_out;
 	  gyro_y_print_out = gyro_y_print_out > 0 ? gyro_y_print_out : -gyro_y_print_out;
@@ -765,15 +772,15 @@ void StartTask3(void *argument)
 
 	  if((mag >= 0) && (mag < 1))
 	  {
-
+		  pwm_data[0] = 10;
 	  }
 	  else if ((mag >= 1) && (mag < 2))
 	  {
-
+		  pwm_data[0] = 50;
 	  }
 	  else if (mag >= 2)
 		{
-
+		  pwm_data[0] = 90;
 		}
 
 

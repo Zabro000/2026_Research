@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0000f1d8  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0001e748  00000000  00000000  0000f208  2**0
+ 12 .debug_info   0001e730  00000000  00000000  0000f208  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00003fb6  00000000  00000000  0002d950  2**0
+ 13 .debug_abbrev 00003fb6  00000000  00000000  0002d938  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00001a00  00000000  00000000  00031908  2**3
+ 14 .debug_aranges 00001a00  00000000  00000000  000318f0  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 00001450  00000000  00000000  00033308  2**0
+ 15 .debug_rnglists 00001450  00000000  00000000  000332f0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00004e3a  00000000  00000000  00034758  2**0
+ 16 .debug_macro  00004e3a  00000000  00000000  00034740  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0001e4f7  00000000  00000000  00039592  2**0
+ 17 .debug_line   0001e4f7  00000000  00000000  0003957a  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000e19b6  00000000  00000000  00057a89  2**0
+ 18 .debug_str    000e19b6  00000000  00000000  00057a71  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  0013943f  2**0
+ 19 .comment      00000043  00000000  00000000  00139427  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00007bcc  00000000  00000000  00139484  2**2
+ 20 .debug_frame  00007bcc  00000000  00000000  0013946c  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000085  00000000  00000000  00141050  2**0
+ 21 .debug_line_str 00000085  00000000  00000000  00141038  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1318,7 +1318,7 @@ void read_accel_data(uint8_t addr, float *accelx, float *accely, float *accelz)
  8000fee:	603b      	str	r3, [r7, #0]
  8000ff0:	4603      	mov	r3, r0
  8000ff2:	73fb      	strb	r3, [r7, #15]
-	int8_t raw_data[6];
+	uint8_t raw_data[6];
 	int16_t accel_x_raw, accel_y_raw, accel_z_raw;
 
 
@@ -1337,24 +1337,30 @@ void read_accel_data(uint8_t addr, float *accelx, float *accely, float *accelz)
  800100e:	f002 f8df 	bl	80031d0 <HAL_I2C_Mem_Read>
 
 	accel_x_raw = (int16_t)(raw_data[0] << 8 | raw_data[1]);
- 8001012:	f997 3014 	ldrsb.w	r3, [r7, #20]
+ 8001012:	7d3b      	ldrb	r3, [r7, #20]
+ 8001014:	b21b      	sxth	r3, r3
  8001016:	021b      	lsls	r3, r3, #8
- 8001018:	b21b      	sxth	r3, r3
- 800101a:	f997 2015 	ldrsb.w	r2, [r7, #21]
+ 8001018:	b21a      	sxth	r2, r3
+ 800101a:	7d7b      	ldrb	r3, [r7, #21]
+ 800101c:	b21b      	sxth	r3, r3
  800101e:	4313      	orrs	r3, r2
  8001020:	83fb      	strh	r3, [r7, #30]
 	accel_y_raw = (int16_t)(raw_data[2] << 8 | raw_data[3]);
- 8001022:	f997 3016 	ldrsb.w	r3, [r7, #22]
+ 8001022:	7dbb      	ldrb	r3, [r7, #22]
+ 8001024:	b21b      	sxth	r3, r3
  8001026:	021b      	lsls	r3, r3, #8
- 8001028:	b21b      	sxth	r3, r3
- 800102a:	f997 2017 	ldrsb.w	r2, [r7, #23]
+ 8001028:	b21a      	sxth	r2, r3
+ 800102a:	7dfb      	ldrb	r3, [r7, #23]
+ 800102c:	b21b      	sxth	r3, r3
  800102e:	4313      	orrs	r3, r2
  8001030:	83bb      	strh	r3, [r7, #28]
 	accel_z_raw = (int16_t)(raw_data[4] << 8 | raw_data[5]);
- 8001032:	f997 3018 	ldrsb.w	r3, [r7, #24]
+ 8001032:	7e3b      	ldrb	r3, [r7, #24]
+ 8001034:	b21b      	sxth	r3, r3
  8001036:	021b      	lsls	r3, r3, #8
- 8001038:	b21b      	sxth	r3, r3
- 800103a:	f997 2019 	ldrsb.w	r2, [r7, #25]
+ 8001038:	b21a      	sxth	r2, r3
+ 800103a:	7e7b      	ldrb	r3, [r7, #25]
+ 800103c:	b21b      	sxth	r3, r3
  800103e:	4313      	orrs	r3, r2
  8001040:	837b      	strh	r3, [r7, #26]
 
@@ -1425,7 +1431,7 @@ void read_gyro_data(uint8_t addr, float *gyrox, float *gyroy, float *gyroz)
  80010d2:	603b      	str	r3, [r7, #0]
  80010d4:	4603      	mov	r3, r0
  80010d6:	73fb      	strb	r3, [r7, #15]
-	int8_t raw_data[6];
+	uint8_t raw_data[6];
 	int16_t gryo_x_raw, gryo_y_raw, gryo_z_raw;
 
 
@@ -1444,24 +1450,30 @@ void read_gyro_data(uint8_t addr, float *gyrox, float *gyroy, float *gyroz)
  80010f2:	f002 f86d 	bl	80031d0 <HAL_I2C_Mem_Read>
 
 	gryo_x_raw = (int16_t)(raw_data[0] << 8 | raw_data[1]);
- 80010f6:	f997 3014 	ldrsb.w	r3, [r7, #20]
+ 80010f6:	7d3b      	ldrb	r3, [r7, #20]
+ 80010f8:	b21b      	sxth	r3, r3
  80010fa:	021b      	lsls	r3, r3, #8
- 80010fc:	b21b      	sxth	r3, r3
- 80010fe:	f997 2015 	ldrsb.w	r2, [r7, #21]
+ 80010fc:	b21a      	sxth	r2, r3
+ 80010fe:	7d7b      	ldrb	r3, [r7, #21]
+ 8001100:	b21b      	sxth	r3, r3
  8001102:	4313      	orrs	r3, r2
  8001104:	83fb      	strh	r3, [r7, #30]
 	gryo_y_raw = (int16_t)(raw_data[2] << 8 | raw_data[3]);
- 8001106:	f997 3016 	ldrsb.w	r3, [r7, #22]
+ 8001106:	7dbb      	ldrb	r3, [r7, #22]
+ 8001108:	b21b      	sxth	r3, r3
  800110a:	021b      	lsls	r3, r3, #8
- 800110c:	b21b      	sxth	r3, r3
- 800110e:	f997 2017 	ldrsb.w	r2, [r7, #23]
+ 800110c:	b21a      	sxth	r2, r3
+ 800110e:	7dfb      	ldrb	r3, [r7, #23]
+ 8001110:	b21b      	sxth	r3, r3
  8001112:	4313      	orrs	r3, r2
  8001114:	83bb      	strh	r3, [r7, #28]
 	gryo_z_raw = (int16_t)(raw_data[4] << 8 | raw_data[5]);
- 8001116:	f997 3018 	ldrsb.w	r3, [r7, #24]
+ 8001116:	7e3b      	ldrb	r3, [r7, #24]
+ 8001118:	b21b      	sxth	r3, r3
  800111a:	021b      	lsls	r3, r3, #8
- 800111c:	b21b      	sxth	r3, r3
- 800111e:	f997 2019 	ldrsb.w	r2, [r7, #25]
+ 800111c:	b21a      	sxth	r2, r3
+ 800111e:	7e7b      	ldrb	r3, [r7, #25]
+ 8001120:	b21b      	sxth	r3, r3
  8001122:	4313      	orrs	r3, r2
  8001124:	837b      	strh	r3, [r7, #26]
 
