@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0000d0f4  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0001e2c7  00000000  00000000  0000d124  2**0
+ 12 .debug_info   0001e2d6  00000000  00000000  0000d124  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00003d56  00000000  00000000  0002b3eb  2**0
+ 13 .debug_abbrev 00003d56  00000000  00000000  0002b3fa  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00001950  00000000  00000000  0002f148  2**3
+ 14 .debug_aranges 00001950  00000000  00000000  0002f150  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 000013d8  00000000  00000000  00030a98  2**0
+ 15 .debug_rnglists 000013d8  00000000  00000000  00030aa0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00004012  00000000  00000000  00031e70  2**0
+ 16 .debug_macro  00004012  00000000  00000000  00031e78  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0001d865  00000000  00000000  00035e82  2**0
+ 17 .debug_line   0001d863  00000000  00000000  00035e8a  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000e033f  00000000  00000000  000536e7  2**0
+ 18 .debug_str    000e0348  00000000  00000000  000536ed  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  00133a26  2**0
+ 19 .comment      00000043  00000000  00000000  00133a35  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00006be8  00000000  00000000  00133a6c  2**2
+ 20 .debug_frame  00006be8  00000000  00000000  00133a78  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000089  00000000  00000000  0013a654  2**0
+ 21 .debug_line_str 00000089  00000000  00000000  0013a660  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -2654,98 +2654,98 @@ void StartTask3(void *argument)
 	osDelay(100);
  8001736:	2064      	movs	r0, #100	@ 0x64
  8001738:	f007 fa6e 	bl	8008c18 <osDelay>
-	uint16_t duty;
+	uint16_t duty_1 = 500;
+ 800173c:	f44f 73fa 	mov.w	r3, #500	@ 0x1f4
+ 8001740:	83fb      	strh	r3, [r7, #30]
+	uint16_t duty_2 = 8000;
+ 8001742:	f44f 53fa 	mov.w	r3, #8000	@ 0x1f40
+ 8001746:	83bb      	strh	r3, [r7, #28]
 
 
   for(;;)
   {
 	  read_gyro_data(i2c_addr, &gyro_x_print_out, &gyro_y_print_out, &gyro_z_print_out);
- 800173c:	4b35      	ldr	r3, [pc, #212]	@ (8001814 <StartTask3+0xf0>)
- 800173e:	7818      	ldrb	r0, [r3, #0]
- 8001740:	f107 030c 	add.w	r3, r7, #12
- 8001744:	f107 0210 	add.w	r2, r7, #16
- 8001748:	f107 0114 	add.w	r1, r7, #20
- 800174c:	f7ff fbc4 	bl	8000ed8 <read_gyro_data>
+ 8001748:	4b32      	ldr	r3, [pc, #200]	@ (8001814 <StartTask3+0xf0>)
+ 800174a:	7818      	ldrb	r0, [r3, #0]
+ 800174c:	f107 030c 	add.w	r3, r7, #12
+ 8001750:	f107 0210 	add.w	r2, r7, #16
+ 8001754:	f107 0114 	add.w	r1, r7, #20
+ 8001758:	f7ff fbbe 	bl	8000ed8 <read_gyro_data>
 
 	  gyro_x_print_out = gyro_x_print_out > 0 ? gyro_x_print_out : -gyro_x_print_out;
- 8001750:	edd7 7a05 	vldr	s15, [r7, #20]
- 8001754:	eef5 7ac0 	vcmpe.f32	s15, #0.0
- 8001758:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
- 800175c:	dd02      	ble.n	8001764 <StartTask3+0x40>
- 800175e:	edd7 7a05 	vldr	s15, [r7, #20]
- 8001762:	e003      	b.n	800176c <StartTask3+0x48>
- 8001764:	edd7 7a05 	vldr	s15, [r7, #20]
- 8001768:	eef1 7a67 	vneg.f32	s15, s15
- 800176c:	edc7 7a05 	vstr	s15, [r7, #20]
+ 800175c:	edd7 7a05 	vldr	s15, [r7, #20]
+ 8001760:	eef5 7ac0 	vcmpe.f32	s15, #0.0
+ 8001764:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8001768:	dd02      	ble.n	8001770 <StartTask3+0x4c>
+ 800176a:	edd7 7a05 	vldr	s15, [r7, #20]
+ 800176e:	e003      	b.n	8001778 <StartTask3+0x54>
+ 8001770:	edd7 7a05 	vldr	s15, [r7, #20]
+ 8001774:	eef1 7a67 	vneg.f32	s15, s15
+ 8001778:	edc7 7a05 	vstr	s15, [r7, #20]
 	  gyro_y_print_out = gyro_y_print_out > 0 ? gyro_y_print_out : -gyro_y_print_out;
- 8001770:	edd7 7a04 	vldr	s15, [r7, #16]
- 8001774:	eef5 7ac0 	vcmpe.f32	s15, #0.0
- 8001778:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
- 800177c:	dd02      	ble.n	8001784 <StartTask3+0x60>
- 800177e:	edd7 7a04 	vldr	s15, [r7, #16]
- 8001782:	e003      	b.n	800178c <StartTask3+0x68>
- 8001784:	edd7 7a04 	vldr	s15, [r7, #16]
- 8001788:	eef1 7a67 	vneg.f32	s15, s15
- 800178c:	edc7 7a04 	vstr	s15, [r7, #16]
+ 800177c:	edd7 7a04 	vldr	s15, [r7, #16]
+ 8001780:	eef5 7ac0 	vcmpe.f32	s15, #0.0
+ 8001784:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8001788:	dd02      	ble.n	8001790 <StartTask3+0x6c>
+ 800178a:	edd7 7a04 	vldr	s15, [r7, #16]
+ 800178e:	e003      	b.n	8001798 <StartTask3+0x74>
+ 8001790:	edd7 7a04 	vldr	s15, [r7, #16]
+ 8001794:	eef1 7a67 	vneg.f32	s15, s15
+ 8001798:	edc7 7a04 	vstr	s15, [r7, #16]
 	  gyro_z_print_out = gyro_z_print_out > 0 ? gyro_z_print_out : -gyro_z_print_out;
- 8001790:	edd7 7a03 	vldr	s15, [r7, #12]
- 8001794:	eef5 7ac0 	vcmpe.f32	s15, #0.0
- 8001798:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
- 800179c:	dd02      	ble.n	80017a4 <StartTask3+0x80>
- 800179e:	edd7 7a03 	vldr	s15, [r7, #12]
- 80017a2:	e003      	b.n	80017ac <StartTask3+0x88>
- 80017a4:	edd7 7a03 	vldr	s15, [r7, #12]
- 80017a8:	eef1 7a67 	vneg.f32	s15, s15
- 80017ac:	edc7 7a03 	vstr	s15, [r7, #12]
+ 800179c:	edd7 7a03 	vldr	s15, [r7, #12]
+ 80017a0:	eef5 7ac0 	vcmpe.f32	s15, #0.0
+ 80017a4:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80017a8:	dd02      	ble.n	80017b0 <StartTask3+0x8c>
+ 80017aa:	edd7 7a03 	vldr	s15, [r7, #12]
+ 80017ae:	e003      	b.n	80017b8 <StartTask3+0x94>
+ 80017b0:	edd7 7a03 	vldr	s15, [r7, #12]
+ 80017b4:	eef1 7a67 	vneg.f32	s15, s15
+ 80017b8:	edc7 7a03 	vstr	s15, [r7, #12]
 
 	  mag = gyro_x_print_out + gyro_y_print_out + gyro_z_print_out;
- 80017b0:	ed97 7a05 	vldr	s14, [r7, #20]
- 80017b4:	edd7 7a04 	vldr	s15, [r7, #16]
- 80017b8:	ee37 7a27 	vadd.f32	s14, s14, s15
- 80017bc:	edd7 7a03 	vldr	s15, [r7, #12]
- 80017c0:	ee77 7a27 	vadd.f32	s15, s14, s15
- 80017c4:	edc7 7a07 	vstr	s15, [r7, #28]
+ 80017bc:	ed97 7a05 	vldr	s14, [r7, #20]
+ 80017c0:	edd7 7a04 	vldr	s15, [r7, #16]
+ 80017c4:	ee37 7a27 	vadd.f32	s14, s14, s15
+ 80017c8:	edd7 7a03 	vldr	s15, [r7, #12]
+ 80017cc:	ee77 7a27 	vadd.f32	s15, s14, s15
+ 80017d0:	edc7 7a06 	vstr	s15, [r7, #24]
 
 
 	  if((mag >= 0) && (mag < 40))
- 80017c8:	edd7 7a07 	vldr	s15, [r7, #28]
- 80017cc:	eef5 7ac0 	vcmpe.f32	s15, #0.0
- 80017d0:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
- 80017d4:	db10      	blt.n	80017f8 <StartTask3+0xd4>
- 80017d6:	edd7 7a07 	vldr	s15, [r7, #28]
- 80017da:	ed9f 7a0f 	vldr	s14, [pc, #60]	@ 8001818 <StartTask3+0xf4>
- 80017de:	eef4 7ac7 	vcmpe.f32	s15, s14
- 80017e2:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
- 80017e6:	d507      	bpl.n	80017f8 <StartTask3+0xd4>
+ 80017d4:	edd7 7a06 	vldr	s15, [r7, #24]
+ 80017d8:	eef5 7ac0 	vcmpe.f32	s15, #0.0
+ 80017dc:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80017e0:	db0c      	blt.n	80017fc <StartTask3+0xd8>
+ 80017e2:	edd7 7a06 	vldr	s15, [r7, #24]
+ 80017e6:	ed9f 7a0c 	vldr	s14, [pc, #48]	@ 8001818 <StartTask3+0xf4>
+ 80017ea:	eef4 7ac7 	vcmpe.f32	s15, s14
+ 80017ee:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80017f2:	d503      	bpl.n	80017fc <StartTask3+0xd8>
 	  {
-		  duty = 1000;
- 80017e8:	f44f 737a 	mov.w	r3, #1000	@ 0x3e8
- 80017ec:	837b      	strh	r3, [r7, #26]
-		  TIM1->CCR1 = 2000;
- 80017ee:	4b0b      	ldr	r3, [pc, #44]	@ (800181c <StartTask3+0xf8>)
- 80017f0:	f44f 62fa 	mov.w	r2, #2000	@ 0x7d0
- 80017f4:	635a      	str	r2, [r3, #52]	@ 0x34
- 80017f6:	e009      	b.n	800180c <StartTask3+0xe8>
+		  TIM1->CCR1 = duty_1;
+ 80017f4:	4a09      	ldr	r2, [pc, #36]	@ (800181c <StartTask3+0xf8>)
+ 80017f6:	8bfb      	ldrh	r3, [r7, #30]
+ 80017f8:	6353      	str	r3, [r2, #52]	@ 0x34
+ 80017fa:	e006      	b.n	800180a <StartTask3+0xe6>
 	  }
 	  else
 	  {
-		  duty = 8000;
- 80017f8:	f44f 53fa 	mov.w	r3, #8000	@ 0x1f40
- 80017fc:	837b      	strh	r3, [r7, #26]
-		  TIM1->CCR1 = duty;
- 80017fe:	4a07      	ldr	r2, [pc, #28]	@ (800181c <StartTask3+0xf8>)
- 8001800:	8b7b      	ldrh	r3, [r7, #26]
- 8001802:	6353      	str	r3, [r2, #52]	@ 0x34
+		  TIM1->CCR1 = duty_2;
+ 80017fc:	4a07      	ldr	r2, [pc, #28]	@ (800181c <StartTask3+0xf8>)
+ 80017fe:	8bbb      	ldrh	r3, [r7, #28]
+ 8001800:	6353      	str	r3, [r2, #52]	@ 0x34
 		  osDelay(1000);
- 8001804:	f44f 707a 	mov.w	r0, #1000	@ 0x3e8
- 8001808:	f007 fa06 	bl	8008c18 <osDelay>
+ 8001802:	f44f 707a 	mov.w	r0, #1000	@ 0x3e8
+ 8001806:	f007 fa07 	bl	8008c18 <osDelay>
 	  }
 
 	  osDelay(10);
- 800180c:	200a      	movs	r0, #10
- 800180e:	f007 fa03 	bl	8008c18 <osDelay>
+ 800180a:	200a      	movs	r0, #10
+ 800180c:	f007 fa04 	bl	8008c18 <osDelay>
 	  read_gyro_data(i2c_addr, &gyro_x_print_out, &gyro_y_print_out, &gyro_z_print_out);
- 8001812:	e793      	b.n	800173c <StartTask3+0x18>
+ 8001810:	e79a      	b.n	8001748 <StartTask3+0x24>
+ 8001812:	bf00      	nop
  8001814:	20000090 	.word	0x20000090
  8001818:	42200000 	.word	0x42200000
  800181c:	40010000 	.word	0x40010000

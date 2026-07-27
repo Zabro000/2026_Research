@@ -752,7 +752,8 @@ void StartTask3(void *argument)
 
 	imu_init(i2c_addr);
 	osDelay(100);
-	uint16_t duty;
+	uint16_t duty_1 = 500;
+	uint16_t duty_2 = 8000;
 
 
   for(;;)
@@ -768,13 +769,11 @@ void StartTask3(void *argument)
 
 	  if((mag >= 0) && (mag < 40))
 	  {
-		  duty = 1000;
-		  TIM1->CCR1 = 2000;
+		  TIM1->CCR1 = duty_1;
 	  }
 	  else
 	  {
-		  duty = 8000;
-		  TIM1->CCR1 = duty;
+		  TIM1->CCR1 = duty_2;
 		  osDelay(1000);
 	  }
 
