@@ -752,6 +752,7 @@ void StartTask3(void *argument)
 
 	imu_init(i2c_addr);
 	osDelay(100);
+	uint16_t duty;
 
 
   for(;;)
@@ -762,30 +763,20 @@ void StartTask3(void *argument)
 	  gyro_y_print_out = gyro_y_print_out > 0 ? gyro_y_print_out : -gyro_y_print_out;
 	  gyro_z_print_out = gyro_z_print_out > 0 ? gyro_z_print_out : -gyro_z_print_out;
 
-	  gyro_x_print_out /= 360;
-	  gyro_y_print_out /= 360;
-	  gyro_z_print_out /= 360;
 	  mag = gyro_x_print_out + gyro_y_print_out + gyro_z_print_out;
 
 
-	  if((mag >= 0) && (mag < 1))
+	  if((mag >= 0) && (mag < 40))
 	  {
-		  pwm_data[0] = 10;
+		  duty = 1000;
+		  TIM1->CCR1 = 2000;
 	  }
-	  else if ((mag >= 1) && (mag < 2))
+	  else
 	  {
-		  pwm_data[0] = 50;
+		  duty = 8000;
+		  TIM1->CCR1 = duty;
+		  osDelay(1000);
 	  }
-	  else if (mag >= 2)
-		{
-		  pwm_data[0] = 90;
-		}
-
-
-
-
-
-
 
 	  osDelay(10);
   }
