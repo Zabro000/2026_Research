@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -36,6 +37,10 @@
 #define BUFFER 40
 #define I2C_BUFFER 16
 #define SAW_PTS 32
+
+# define MEM_SIZE 1
+# define DATA_SIZE 1
+# define TIMEOUT 1000
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -115,6 +120,8 @@ volatile uint16_t i2c_data_length = 0;
 
 uint8_t uart_int_var = 0;
 
+uint8_t i2c_addr = 0x68 << 1;
+
 
 
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
@@ -139,6 +146,51 @@ void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
 
 }
+
+
+void imu_init(uint8_t addr)
+{
+	uint8_t check;
+	uint8_t data;
+
+	uint8_t mema_1 = 0x75;
+	uint8_t mema_2 = 0x6B;
+	uint8_t mema_3 = 0x19;
+	uint8_t mema_4 = 0x1B, mema_5 = 0x1C;
+
+	HAL_I2C_Mem_Read(&hi2c1, addr, mema_1, MEM_SIZE, &check, DATA_SIZE, TIMEOUT);
+
+	data = 0x00;
+	HAL_I2C_Mem_Write(&hi2c1, addr, mema_2, MEM_SIZE, &data, DATA_SIZE, TIMEOUT);
+
+	data = 0x07;
+	HAL_I2C_Mem_Write(&hi2c1, addr, mema_3, MEM_SIZE, &data, DATA_SIZE, TIMEOUT);
+
+	data = 0x00;
+	HAL_I2C_Mem_Write(&hi2c1, addr, mema_4, MEM_SIZE, &data, DATA_SIZE, TIMEOUT);
+	HAL_I2C_Mem_Write(&hi2c1, addr, mema_5, MEM_SIZE, &data, DATA_SIZE, TIMEOUT);
+
+}
+
+
+void read_gyro_data(uint8_t addr, float *gyrox, float *gyroy, float *gyroz)
+{
+	uint8_t raw_data[6];
+	int16_t gryo_x_raw, gryo_y_raw, gryo_z_raw;
+
+
+	HAL_I2C_Mem_Read(&hi2c1, addr, 0x43, MEM_SIZE, raw_data, 6, 1000);
+
+	gryo_x_raw = (int16_t)(raw_data[0] << 8 | raw_data[1]);
+	gryo_y_raw = (int16_t)(raw_data[2] << 8 | raw_data[3]);
+	gryo_z_raw = (int16_t)(raw_data[4] << 8 | raw_data[5]);
+
+	*gyrox = gryo_x_raw / 131.0;
+	*gyroy = gryo_y_raw / 131.0;
+	*gyroz = gryo_z_raw / 131.0;
+
+}
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -598,35 +650,45 @@ void StartTask3(void *argument)
 {
   /* USER CODE BEGIN StartTask3 */
   /* Infinite loop */
-	const uint8_t addr = 0x68 << 1; //address of the IC and manditory left shift
-	uint8_t check;
-	HAL_StatusTypeDef ret;
-	uint16_t data;
-	float data_proc;
-	uint8_t i2c_init1 = 0x6b, i2c_init2 = 0, i2c_init3 = 0x3b;
+	float gyro_x_print_out, gyro_y_print_out, gyro_z_print_out;
+	float mag;
 
-
-	HAL_I2C_Mem_Read(&hi2c1, addr, 0x75, 1, &check, 1, 1000);
-	if (check == 0x68)
-	{
-		// Do something... maybe in the LED task
-	}
-
-	HAL_I2C_Mem_Write_IT(&hi2c1, addr, 0x6B, 1, 0, 1);
-
-	//// To initalize the mpu
-
-	if(HAL_I2C_IsDeviceReady(&hi2c1, addr, 5, 1000) == HAL_OK)
-	{
-		HAL_I2C_Master_Seq_Transmit_IT(&hi2c1, addr, &i2c_init1, 1, I2C_FIRST_AND_LAST_FRAME);
-		HAL_I2C_Master_Seq_Transmit_IT(&hi2c1, addr, &i2c_init2, 1, I2C_FIRST_AND_LAST_FRAME);
-		HAL_I2C_Master_Seq_Transmit_IT(&hi2c1, addr, &i2c_init3, 1, I2C_FIRST_AND_LAST_FRAME);
-	}
-
+	imu_init(i2c_addr);
 	osDelay(100);
+
   for(;;)
   {
-	  HAL_I2C_Master_Receive_IT(&hi2c1, addr, I2C_DATA, i2c_data_length);
+	  read_gyro_data(addr, &gyro_x_print_out, &gyro_y_print_out, &gyro_z_print_out);
+
+	  gyro_x_print_out = gyro_x_print_out > 0 ? gyro_x_print_out : -gyro_x_print_out;
+	  gyro_y_print_out = gyro_y_print_out > 0 ? gyro_y_print_out : -gyro_y_print_out;
+	  gyro_z_print_out = gyro_z_print_out > 0 ? gyro_z_print_out : -gyro_z_print_out;
+
+	  gyro_x_print_out /= 360;
+	  gyro_y_print_out /= 360;
+	  gyro_z_print_out /= 360;
+	  mag = gyro_x_print_out + gyro_y_print_out + gyro_z_print_out;
+
+
+	  if((mag >= 0) && (mag < 1))
+	  {
+
+	  }
+	  else if ((mag >= 1) && (mag < 2))
+	  {
+
+	  }
+	  else if (mag >= 2)
+		{
+
+		}
+
+
+
+
+
+
+
 	  osDelay(10);
   }
   /* USER CODE END StartTask3 */
